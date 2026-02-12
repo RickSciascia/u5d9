@@ -2,8 +2,11 @@ package ricksciascia.u5d9.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ricksciascia.u5d9.entities.Author;
+import ricksciascia.u5d9.exceptions.ValidationException;
 import ricksciascia.u5d9.payloads.AuthorPayload;
 import ricksciascia.u5d9.services.AuthorsService;
 
@@ -33,14 +36,32 @@ public class AuthorsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Author saveAutore(@RequestBody AuthorPayload payload) {
+    public Author saveAutore(@RequestBody @Validated AuthorPayload payload, BindingResult validationResult) {
 
-        return this.authorsService.saveAuthor(payload);
+        if(validationResult.hasErrors()) {
+            List<String> listaErrori = validationResult.getFieldErrors()
+                    .stream().map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+
+            throw new ValidationException(listaErrori);
+        } else {
+            return this.authorsService.saveAuthor(payload);
+        }
     }
 
     @PutMapping({"/{authorId}"})
-    public Author editAutore(@RequestBody AuthorPayload payload, @PathVariable long authorId) {
-        return this.authorsService.updateAuthorById(authorId, payload);
+//    NOTA PERSONALE subito dopo @Validated ci va l'oggetto BindingResult altrimenti se c'è di mezzo un altro parametro tipo l authorId non capisce l'associazione
+    public Author editAutore(@RequestBody @Validated AuthorPayload payload, BindingResult validationResult, @PathVariable long authorId) {
+        if(validationResult.hasErrors()) {
+            List<String> listaErrori = validationResult.getFieldErrors()
+                    .stream().map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+
+            throw new ValidationException(listaErrori);
+        } else {
+            return this.authorsService.updateAuthorById(authorId, payload);
+        }
+
     }
 
     @DeleteMapping({"/{authorId}"})

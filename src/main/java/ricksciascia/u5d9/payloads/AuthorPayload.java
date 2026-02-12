@@ -2,6 +2,7 @@ package ricksciascia.u5d9.payloads;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Generated;
 
@@ -16,8 +17,9 @@ public class AuthorPayload {
     private String surname;
     @NotBlank(message = "L'indirizzo email è un campo obbligatorio")
     @Email(message = "L'indirizzo email è in un formato non corretto!")
+//    @Pattern( regexp = "/^[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]{2,}$/gm", message = "Formato email non valido manca una @ e un . per il dominio!")
     private String email;
-    @NotBlank(message = "La data di nascita è un campo obbligatorio")
+//    @NotBlank(message = "La data di nascita è un campo obbligatorio")
     private LocalDate dataDiNascita;
 
     @Generated
