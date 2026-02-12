@@ -1,13 +1,23 @@
 package ricksciascia.u5d9.payloads;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Generated;
 
 import java.time.LocalDate;
 
 public class AuthorPayload {
+    @NotBlank(message = "Il nome è un campo obbligatorio")
+    @Size(min = 2, max = 20, message = "il nome deve essere compreso tra 2 e 20 caratteri")
     private String name;
+    @NotBlank(message = "Il cognome è un campo obbligatorio")
+    @Size(min = 2, max = 20, message = "il cognome deve essere compreso tra 2 e 20 caratteri")
     private String surname;
+    @NotBlank(message = "L'indirizzo email è un campo obbligatorio")
+    @Email(message = "L'indirizzo email è in un formato non corretto!")
     private String email;
+    @NotBlank(message = "La data di nascita è un campo obbligatorio")
     private LocalDate dataDiNascita;
 
     @Generated
