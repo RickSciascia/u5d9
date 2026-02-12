@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ricksciascia.u5d9.entities.Author;
 import ricksciascia.u5d9.exceptions.ValidationException;
 import ricksciascia.u5d9.payloads.AuthorPayload;
@@ -69,5 +70,12 @@ public class AuthorsController {
     public void deleteAutore(@PathVariable long authorId) {
 
         this.authorsService.deleteAuthorById(authorId);
+    }
+
+    @PatchMapping("/{authorId}/avatar")
+    public Author uploadImage(@RequestParam("img")MultipartFile file, @PathVariable long authorId) {
+//        System.out.println(file.getOriginalFilename());
+        Author autoreAggiornato= this.authorsService.uploadAvatar(file,authorId);
+        return autoreAggiornato;
     }
 }

@@ -1,22 +1,29 @@
 package ricksciascia.u5d9.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ricksciascia.u5d9.entities.Author;
 import ricksciascia.u5d9.exceptions.BadRequestException;
 import ricksciascia.u5d9.exceptions.NotFoundException;
 import ricksciascia.u5d9.payloads.AuthorPayload;
 import ricksciascia.u5d9.repositories.AuthorRepository;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AuthorsService {
     private final AuthorRepository authorRepository;
+    private final Cloudinary cloudinaryUploader;
 
     @Autowired
-    public AuthorsService(AuthorRepository authorRepository) {
+    public AuthorsService(AuthorRepository authorRepository, Cloudinary cloudinaryUploader) {
         this.authorRepository = authorRepository;
+        this.cloudinaryUploader = cloudinaryUploader;
     }
 
     public Author saveAuthor(AuthorPayload payload) {
@@ -69,10 +76,23 @@ public class AuthorsService {
     }
 
     public void deleteAuthorById(long authorId) {
-//        cerco tramite metodo prima che in caso di errore lancia anche eccezzione
+//        cerco tramite metodo prima che in caso di errore lancia anche eccezione
         Author trovato =  this.getAuthorById(authorId);
 //        cancello
         this.authorRepository.delete(trovato);
 
+    }
+
+    public Author uploadAvatar(MultipartFile file, long authorId) {
+        Author trovato = this.getAuthorById(authorId);
+        try{
+            Map result = cloudinaryUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) result.get("secure_url");
+            trovato.setAvatar(imageUrl);
+            return authorRepository.save(trovato);
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
