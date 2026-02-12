@@ -50,7 +50,7 @@ public class AuthorsController {
     }
 
     @PutMapping({"/{authorId}"})
-//    NOTA PERSONALE subito dopo @Validated ci va l'oggetto BindingResult altrimenti se c'è di mezzo un altro parametro tipo l authorId non capisce l'associazione
+//    NOTA PERSONALE: subito dopo @Validated ci va l'oggetto BindingResult altrimenti se c'è di mezzo un altro parametro tipo l authorId non capisce l'associazione
     public Author editAutore(@RequestBody @Validated AuthorPayload payload, BindingResult validationResult, @PathVariable long authorId) {
         if(validationResult.hasErrors()) {
             List<String> listaErrori = validationResult.getFieldErrors()

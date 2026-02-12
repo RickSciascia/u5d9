@@ -3,10 +3,15 @@ package ricksciascia.u5d9.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ricksciascia.u5d9.entities.BlogPost;
+import ricksciascia.u5d9.exceptions.ValidationException;
 import ricksciascia.u5d9.payloads.BlogPostPayload;
 import ricksciascia.u5d9.services.BlogPostsService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping({"/blogs"})
@@ -20,9 +25,17 @@ public class BlogPostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BlogPost saveBlogPost(@RequestBody BlogPostPayload payload) {
+    public BlogPost saveBlogPost(@RequestBody @Validated BlogPostPayload payload, BindingResult validationResult) {
 
-        return this.blogPostsService.saveBlogPost(payload);
+        if(validationResult.hasErrors()) {
+            List<String> listaErrori = validationResult.getFieldErrors()
+                    .stream().map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+
+            throw new ValidationException(listaErrori);
+        } else {
+            return this.blogPostsService.saveBlogPost(payload);
+        }
     }
 
     @GetMapping
